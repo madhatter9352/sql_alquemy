@@ -1,0 +1,60 @@
+create tables
+from app import db
+db.create_all()
+
+insert
+from datetime import date
+member = Member(username = 'Lazaro', password = 'secret', email = 'lrcamacho@uci.cu', join_date = date.today())
+db.session.add(member)
+db.session.commit()
+
+update
+member.username = 'alejandra'
+db.session.commit()
+
+delete
+db.session.delete(member)
+db.session.commit()
+
+query:
+results = Member.query.all()
+
+for r in results:
+    print(r.username)
+
+filter = Member.query.filter_by(username == 'Antony').first()
+
+print(filter.username)
+filter.password = 'nuewpassword'
+db.session.commit()
+
+like_query = Member.query.filter(Member.username.like('%nth%'))
+
+q = Member.query.filter(Member.username.in_(['antony', 'zach1'])).all()
+q = Member.query.filter(~Member.username.in_(['antony', 'zach1'])).all()
+
+
+null_query = Member.query.filter(Member.username == Null).all()
+
+uso de and
+null_query = Member.query.filter(Member.username == Null).filter(Member.username == 'Nombre').all()
+
+null_query = Member.query.filter(Member.username == Null, Member.username == 'Nombre').all()
+
+null_query = Member.query.filter(db.and_(Member.username == Null, Member.username == 'Dog')).all()
+
+uso de or
+null_query = Member.query.filter(db.or_(Member.username == Null, Member.username == 'Dog')).all()
+
+
+One To Many query
+from app import db, Member, Order
+
+member_obj = Member.query.filter(Member.username == 'Alejandra').first()
+
+order1 = Order(price=50, member_id=member.id)
+db.session.add(order1)
+db.session.commit()
+
+order2 = Order(price=200, member=member_obj)
+
